@@ -38,21 +38,47 @@
  *   // => { name: "Jadeja", strikeRate: 175, economy: 7.5, battingAvg: 28.57, isAllRounder: false }
  */
 export const calcStrikeRate = (runs, balls) => {
-  // Your code here
+  if (runs < 0 || balls <= 0) {
+    return 0;
+  }
+
+  return Number(((runs / balls) * 100).toFixed(2));
 };
 
 export const calcEconomy = (runsConceded, overs) => {
-  // Your code here
+  if (overs <= 0 || runsConceded < 0) {
+    return 0;
+  }
+
+  return Number((runsConceded / overs).toFixed(2));
 };
 
 export const calcBattingAvg = (totalRuns, innings, notOuts = 0) => {
-  // Your code here
+  if ((innings - notOuts) <= 0) {
+    return 0;
+  }
+
+  return Number((totalRuns / (innings - notOuts)).toFixed(2));
 };
 
 export const isAllRounder = (battingAvg, economy) => {
-  // Your code here
+  if (battingAvg > 30 && economy < 8) {
+    return true;
+  }
+
+  return false;
 };
 
 export const getPlayerCard = (player) => {
-  // Your code here
+  if (!player || typeof(player) !== "object" || !player.name) {
+    return null;
+  }
+
+  let name = player.name.trim();
+  let strikeRate = calcStrikeRate(player.runs, player.balls);
+  let economy = calcEconomy(player.runsConceded, player.overs);
+  let battingAvg = calcBattingAvg(player.totalRuns, player.innings, player.notOuts);
+  let allRounder = isAllRounder(battingAvg, economy);
+
+  return { name, strikeRate, economy, battingAvg, isAllRounder: allRounder };
 };

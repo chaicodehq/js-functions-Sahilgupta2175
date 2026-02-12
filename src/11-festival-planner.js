@@ -49,5 +49,67 @@
  *   mgr.getUpcoming("2025-01-01", 1); // => [{ name: "Republic Day", ... }]
  */
 export function createFestivalManager() {
-  // Your code here
+  // 🔒 Private state
+  let festivals = [];
+
+  const validTypes = ["religious", "national", "cultural"];
+
+  // Helper to clone objects (immutability)
+  const cloneFestival = (f) => ({ ...f });
+
+  return {
+    addFestival(name, date, type) {
+      if (
+        typeof name !== "string" ||
+        name.trim() === "" ||
+        typeof date !== "string" ||
+        !validTypes.includes(type)
+      ) {
+        return -1;
+      }
+
+      // no duplicate names
+      if (festivals.some((f) => f.name === name)) {
+        return -1;
+      }
+
+      const newFestival = { name, date, type };
+
+      // create new array (avoid mutation pattern)
+      festivals = [...festivals, newFestival];
+
+      return festivals.length;
+    },
+
+    removeFestival(name) {
+      const initialLength = festivals.length;
+
+      festivals = festivals.filter((f) => f.name !== name);
+
+      return festivals.length !== initialLength;
+    },
+
+    getAll() {
+      // return deep copy so external edits don't affect private state
+      return festivals.map(cloneFestival);
+    },
+
+    getByType(type) {
+      return festivals.filter((f) => f.type === type).map(cloneFestival);
+    },
+
+    getUpcoming(currentDate, n = 3) {
+      if (typeof currentDate !== "string") return [];
+
+      return festivals
+        .filter((f) => f.date >= currentDate)
+        .sort((a, b) => a.date.localeCompare(b.date))
+        .slice(0, n)
+        .map(cloneFestival);
+    },
+
+    getCount() {
+      return festivals.length;
+    },
+  };
 }

@@ -53,29 +53,58 @@
  *   // => { name: "Haldi", form: "powder", packed: true, label: "Haldi Masala" }
  */
 export function pipe(...fns) {
-  // Your code here
+  if (fns.length === 0) {
+    return (x) => x; // identity function
+  }
+
+  return (input) => fns.reduce((acc, fn) => fn(acc), input);
 }
 
 export function compose(...fns) {
-  // Your code here
+  if (fns.length === 0) {
+    return (x) => x; // identity
+  }
+
+  return (input) => fns.reduceRight((acc, fn) => fn(acc), input);
 }
 
 export function grind(spice) {
-  // Your code here
+  return { ...spice, form: "powder" };
 }
 
 export function roast(spice) {
-  // Your code here
+  return { ...spice, roasted: true, aroma: "strong" };
 }
 
 export function mix(spice) {
-  // Your code here
+  return { ...spice, mixed: true };
 }
 
 export function pack(spice) {
-  // Your code here
+  return {
+    ...spice,
+    packed: true,
+    label: `${spice.name} Masala`,
+  };
 }
 
 export function createRecipe(steps) {
-  // Your code here
+  if (!Array.isArray(steps) || steps.length === 0) {
+    return (x) => x; // identity
+  }
+
+  const stepMap = {
+    grind,
+    roast,
+    mix,
+    pack,
+  };
+
+  const validFns = steps.map((step) => stepMap[step]).filter(Boolean); // remove unknown steps
+
+  if (validFns.length === 0) {
+    return (x) => x;
+  }
+
+  return pipe(...validFns);
 }
